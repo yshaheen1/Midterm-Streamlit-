@@ -1,19 +1,67 @@
-progress_bar = st.sidebar.progress(0)
-status_text = st.sidebar.empty()
-last_rows = np.random.randn(1, 1)  # noqa: NPY002
-chart = st.line_chart(last_rows)
+"""
+Name:       Yusuf Shaheen
+Library:    Streamlit
+URL:        https://docs.streamlit.io
+Description:
+A simple Streamlit demo showing how to visualize data interactively using charts.
+"""
 
-for i in range(1, 101):
-    new_rows = last_rows[-1, :] + np.random.randn(5, 1).cumsum(axis=0)  # noqa: NPY002
-    status_text.text(f"{i}% complete")
-    chart.add_rows(new_rows)
-    progress_bar.progress(i)
-    last_rows = new_rows
-    time.sleep(0.05)
+import streamlit as st
+import pandas as pd
+import numpy as np
 
-progress_bar.empty()
+# ----------------------------------------------------------
+# PAGE SETUP
+# ----------------------------------------------------------
+st.set_page_config(page_title="Streamlit Plotting Demo", layout="centered")
+st.title("📊 Streamlit Plotting Demo")
+st.write("This basic example shows how to create simple charts with Streamlit.")
 
-# Streamlit widgets automatically run the script from top to bottom. Since
-# this button is not connected to any other logic, it just causes a plain
-# rerun.
-st.button("Rerun")
+# ----------------------------------------------------------
+# CREATE SAMPLE DATA
+# ----------------------------------------------------------
+st.header("1. Generate Random Data")
+
+rows = st.slider("Select number of rows", 10, 100, 30)
+data = pd.DataFrame({
+    "x": np.arange(1, rows + 1),
+    "y": np.random.randint(1, 100, size=rows),
+    "z": np.random.randn(rows).cumsum()
+})
+
+st.write("Here’s a preview of the dataset:")
+st.dataframe(data)
+
+# ----------------------------------------------------------
+# PLOTTING EXAMPLES
+# ----------------------------------------------------------
+st.header("2. Plot Charts")
+
+st.subheader("Line Chart")
+st.line_chart(data[["x", "z"]])
+
+st.subheader("Area Chart")
+st.area_chart(data[["x", "y"]])
+
+st.subheader("Bar Chart")
+st.bar_chart(data[["x", "y"]])
+
+# ----------------------------------------------------------
+# ADD SIMPLE INTERACTIVITY
+# ----------------------------------------------------------
+st.header("3. Interactive Chart")
+col_x = st.selectbox("Select X-axis column", data.columns, index=0)
+col_y = st.selectbox("Select Y-axis column", data.columns, index=1)
+st.write(f"Plotting **{col_y}** vs **{col_x}**")
+
+st.scatter_chart(data, x=col_x, y=col_y)
+
+# ----------------------------------------------------------
+# ABOUT
+# ----------------------------------------------------------
+st.header("4. What You Learned")
+st.markdown("""
+- How to create charts with Streamlit (`line_chart`, `bar_chart`, `area_chart`, `scatter_chart`)
+- How to add widgets for user input (sliders and selectboxes)
+- How to quickly turn data into interactive visuals without any JavaScript
+""")

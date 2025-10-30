@@ -3,65 +3,75 @@ Name:       Yusuf Shaheen
 Library:    Streamlit
 URL:        https://docs.streamlit.io
 Description:
-A simple Streamlit demo showing how to visualize data interactively using charts.
+Streamlit allows users to create interactive data apps entirely with Python. 
+This demo combines three examples — displaying a DataFrame, plotting charts, 
+and showing a map — to demonstrate how Streamlit helps data scientists explore and present data interactively.
 """
 
 import streamlit as st
 import pandas as pd
 import numpy as np
 
-# ----------------------------------------------------------
+# -----------------------------------------------------------
 # PAGE SETUP
-# ----------------------------------------------------------
-st.set_page_config(page_title="Streamlit Plotting Demo", layout="centered")
-st.title("📊 Streamlit Plotting Demo")
-st.write("This basic example shows how to create simple charts with Streamlit.")
+# -----------------------------------------------------------
+st.set_page_config(page_title="Streamlit Combined Demo", layout="wide")
 
-# ----------------------------------------------------------
-# CREATE SAMPLE DATA
-# ----------------------------------------------------------
-st.header("1. Generate Random Data")
+st.title("Streamlit Combined Demo 🚀")
+st.write("This demo shows how to use Streamlit for data visualization, tables, and maps — all in one app.")
 
-rows = st.slider("Select number of rows", 10, 100, 30)
+# -----------------------------------------------------------
+# SECTION 1 – DATAFRAME DEMO
+# -----------------------------------------------------------
+st.header("1. DataFrame Demo")
+
+# Create example data
 data = pd.DataFrame({
-    "x": np.arange(1, rows + 1),
-    "y": np.random.randint(1, 100, size=rows),
-    "z": np.random.randn(rows).cumsum()
+    "Product": ["Shoes", "Shirts", "Jeans", "Jackets", "Hats"],
+    "Sales": [120, 230, 310, 180, 140],
+    "Profit": [20, 50, 80, 40, 25]
 })
 
-st.write("Here’s a preview of the dataset:")
-st.dataframe(data)
+st.subheader("Sample Sales Data")
+st.dataframe(data, use_container_width=True)
 
-# ----------------------------------------------------------
-# PLOTTING EXAMPLES
-# ----------------------------------------------------------
-st.header("2. Plot Charts")
+# Display basic stats
+st.subheader("Summary Statistics")
+st.write(data.describe())
 
-st.subheader("Line Chart")
-st.line_chart(data[["x", "z"]])
+# -----------------------------------------------------------
+# SECTION 2 – PLOTTING DEMO
+# -----------------------------------------------------------
+st.header("2. Plotting Demo")
 
-st.subheader("Area Chart")
-st.area_chart(data[["x", "y"]])
+# Generate random data for charts
+chart_data = pd.DataFrame(
+    np.random.randn(20, 3),
+    columns=["Category A", "Category B", "Category C"]
+)
 
-st.subheader("Bar Chart")
-st.bar_chart(data[["x", "y"]])
+st.subheader("Line Chart Example")
+st.line_chart(chart_data)
 
-# ----------------------------------------------------------
-# ADD SIMPLE INTERACTIVITY
-# ----------------------------------------------------------
-st.header("3. Interactive Chart")
-col_x = st.selectbox("Select X-axis column", data.columns, index=0)
-col_y = st.selectbox("Select Y-axis column", data.columns, index=1)
-st.write(f"Plotting **{col_y}** vs **{col_x}**")
+st.subheader("Scatter Chart Example")
+st.scatter_chart(chart_data)
 
-st.scatter_chart(data, x=col_x, y=col_y)
+# -----------------------------------------------------------
+# SECTION 3 – MAPPING DEMO
+# -----------------------------------------------------------
+st.header("3. Mapping Demo")
 
-# ----------------------------------------------------------
-# ABOUT
-# ----------------------------------------------------------
-st.header("4. What You Learned")
-st.markdown("""
-- How to create charts with Streamlit (`line_chart`, `bar_chart`, `area_chart`, `scatter_chart`)
-- How to add widgets for user input (sliders and selectboxes)
-- How to quickly turn data into interactive visuals without any JavaScript
-""")
+# Create random geographic data (Boston area)
+map_data = pd.DataFrame({
+    "lat": 42.36 + np.random.randn(100) * 0.01,
+    "lon": -71.06 + np.random.randn(100) * 0.01
+})
+
+st.subheader("Map of Random Points (Boston Area)")
+st.map(map_data)
+
+# -----------------------------------------------------------
+# FOOTER
+# -----------------------------------------------------------
+st.write("---")
+st.caption("Created by Yusuf Shaheen — Babson College OIM 7502 Midterm Project")

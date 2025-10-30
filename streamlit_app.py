@@ -1,4 +1,4 @@
-@st.cache_data
+
 def get_un_data() -> pd.DataFrame:
     aws_bucket_url = "https://streamlit-demo-data.s3-us-west-2.amazonaws.com"
     df = pd.read_csv(aws_bucket_url + "/agri.csv.gz")

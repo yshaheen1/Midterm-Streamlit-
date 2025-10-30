@@ -1,35 +1,34 @@
-@st.cache_data
-def get_un_data() -> pd.DataFrame:
-    aws_bucket_url = "https://streamlit-demo-data.s3-us-west-2.amazonaws.com"
-    df = pd.read_csv(aws_bucket_url + "/agri.csv.gz")
-    return df.set_index("Region")
+import streamlit as st
+import pandas as pd
+import numpy as np
 
-try:
-    df = get_un_data()
-    countries = st.multiselect(
-        "Choose countries", list(df.index), ["China", "United States of America"]
-    )
-    if not countries:
-        st.error("Please select at least one country.")
-    else:
-        data = df.loc[countries]
-        data /= 1000000.0
-        st.subheader("Gross agricultural production ($B)")
-        st.dataframe(data.sort_index())
+# Title and description
+st.title("My First Streamlit App")
+st.write("This is a simple interactive web app built entirely with Python!")
 
-        data = data.T.reset_index()
-        data = pd.melt(data, id_vars=["index"]).rename(
-            columns={"index": "year", "value": "Gross Agricultural Product ($B)"}
-        )
-        chart = (
-            alt.Chart(data)
-            .mark_area(opacity=0.3)
-            .encode(
-                x="year:T",
-                y=alt.Y("Gross Agricultural Product ($B):Q", stack=None),
-                color="Region:N",
-            )
-        )
-        st.altair_chart(chart, use_container_width=True)
-except URLError as e:
-    st.error(f"This demo requires internet access. Connection error: {e.reason}")
+# Add a slider
+number = st.slider("Pick a number", 0, 100, 25)
+st.write("You picked:", number)
+
+# Add text input
+name = st.text_input("Enter your name")
+if name:
+    st.write(f"Hello {name}! 👋")
+
+# Create sample data
+data = pd.DataFrame({
+    "x": np.arange(1, 11),
+    "y": np.random.randint(1, 100, 10)
+})
+
+# Show data table
+st.subheader("Sample Data Table")
+st.dataframe(data)
+
+# Show a simple line chart
+st.subheader("Line Chart Example")
+st.line_chart(data, x="x", y="y")
+
+# Add a checkbox
+if st.checkbox("Show raw data"):
+    st.write(data)

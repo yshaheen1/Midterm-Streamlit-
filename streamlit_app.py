@@ -3,9 +3,9 @@ Name:       Yusuf Shaheen
 Library:    Streamlit
 URL:        https://docs.streamlit.io
 Description:
-Streamlit allows data scientists to create interactive dashboards directly in Python.
-This demo presents a Massachusetts retail sales dashboard combining a data table,
-charts, and a map — all connected to the same dataset.
+Streamlit allows data scientists to create interactive dashboards quickly.
+This demo shows retail store performance across 10 Massachusetts cities,
+demonstrating how data, plots, and maps can work together in one workflow.
 """
 
 import streamlit as st
@@ -13,83 +13,109 @@ import pandas as pd
 import numpy as np
 
 # -----------------------------------------------------------
-# PAGE SETUP
+# PAGE CONFIG
 # -----------------------------------------------------------
 st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
 
-st.title("Massachusetts Retail Dashboard 🏬")
+st.title("Massachusetts Retail Dashboard 🛒")
 st.write(
-    "This dashboard demonstrates how Streamlit can combine data tables, charts, "
-    "and maps in one cohesive workflow using Python."
+    "This Streamlit demo shows fictional store performance data across multiple "
+    "cities in Massachusetts. It connects data tables, charts, and maps to tell one story."
 )
 
 # -----------------------------------------------------------
-# DATA CREATION – MASSACHUSETTS CITIES
+# CREATE DATA
 # -----------------------------------------------------------
+
 np.random.seed(42)
 
-# Define cities and approximate coordinates for mapping
-ma_cities = {
-    "Boston": (42.36, -71.06),
-    "Worcester": (42.26, -71.80),
-    "Springfield": (42.10, -72.59),
-    "Lowell": (42.63, -71.32),
-    "Cambridge": (42.37, -71.11),
-}
+cities_ma = [
+    "Boston", "Cambridge", "Worcester", "Springfield", "Lowell",
+    "Brockton", "Quincy", "New Bedford", "Fall River", "Lynn"
+]
 
-# Create DataFrame with sales and profit only (no lat/lon in visible table)
-sales_data = pd.DataFrame({
-    "City": list(ma_cities.keys()),
-    "Sales ($)": np.random.randint(60_000, 200_000, size=len(ma_cities)),
-    "Profit ($)": np.random.randint(8_000, 40_000, size=len(ma_cities))
-})
+# each city can have multiple stores
+store_counts = np.random.randint(1, 4, size=len(cities_ma))  # 1–3 stores per city
 
-# Create hidden coordinates DataFrame for mapping
-map_data = pd.DataFrame({
-    "lat": [coords[0] for coords in ma_cities.values()],
-    "lon": [coords[1] for coords in ma_cities.values()]
-})
+records = []
+for city, count in zip(cities_ma, store_counts):
+    for store in range(count):
+        records.append({
+            "City": city,
+            "Store ID": f"{city[:3].upper()}-{store+1}",
+            "Sales ($)": np.random.randint(40_000, 200_000),
+            "Profit ($)": np.random.randint(5_000, 50_000),
+            "Month": np.random.choice(["January", "February", "March", "April"])
+        })
+
+data = pd.DataFrame(records)
 
 # -----------------------------------------------------------
-# SECTION 1 – DATA OVERVIEW
+# SECTION 1 – DATAFRAME DEMO
 # -----------------------------------------------------------
-st.header("1. Sales Overview by City")
+st.header("1. Store Performance Data")
 
-st.subheader("Retail Performance Across Massachusetts")
-st.dataframe(sales_data, use_container_width=True)
-
-total_sales = sales_data["Sales ($)"].sum()
-total_profit = sales_data["Profit ($)"].sum()
-profit_margin = (total_profit / total_sales) * 100
+st.subheader("Retail Stores Across Massachusetts")
+st.dataframe(data, use_container_width=True)
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Total Sales", f"${total_sales:,.0f}")
-col2.metric("Total Profit", f"${total_profit:,.0f}")
-col3.metric("Profit Margin", f"{profit_margin:.1f}%")
+col1.metric("Total Stores", f"{data.shape[0]}")
+col2.metric("Total Sales", f"${data['Sales ($)'].sum():,}")
+col3.metric("Average Profit Margin", f"{(data['Profit ($)'].sum()/data['Sales ($)'].sum())*100:.1f}%")
 
 # -----------------------------------------------------------
 # SECTION 2 – PLOTTING DEMO
 # -----------------------------------------------------------
-st.header("2. Visualize Sales and Profit")
+st.header("2. Sales and Profit Visualizations")
 
-st.subheader("Bar Chart – Sales and Profit by City")
-chart_data = sales_data.set_index("City")[["Sales ($)", "Profit ($)"]]
-st.bar_chart(chart_data)
+# Average performance per city
+city_summary = (
+    data.groupby("City")[["Sales ($)", "Profit ($)"]]
+    .mean()
+    .sort_values("Sales ($)", ascending=False)
+)
 
-st.subheader("Scatter Plot – Relationship Between Sales and Profit")
-st.scatter_chart(sales_data, x="Sales ($)", y="Profit ($)")
+st.subheader("Average Sales and Profit by City")
+st.bar_chart(city_summary)
 
-st.caption("Data scientists can use these charts to spot cities with high sales but low profit efficiency.")
+st.subheader("Scatter Chart: Relationship Between Sales and Profit")
+st.scatter_chart(data, x="Sales ($)", y="Profit ($)")
+
+st.caption("This helps identify which cities have strong sales but lower profit margins.")
 
 # -----------------------------------------------------------
 # SECTION 3 – MAPPING DEMO
 # -----------------------------------------------------------
-st.header("3. Massachusetts Store Map")
+st.header("3. Massachusetts Store Locations")
 
-st.subheader("Store Locations Across Massachusetts")
-st.map(map_data)
+# simple city coordinates (approximate lat/lon)
+city_coords = {
+    "Boston": (42.3601, -71.0589),
+    "Cambridge": (42.3736, -71.1097),
+    "Worcester": (42.2626, -71.8023),
+    "Springfield": (42.1015, -72.5898),
+    "Lowell": (42.6334, -71.3162),
+    "Brockton": (42.0834, -71.0184),
+    "Quincy": (42.2529, -71.0023),
+    "New Bedford": (41.6362, -70.9342),
+    "Fall River": (41.7015, -71.1550),
+    "Lynn": (42.4668, -70.9495),
+}
 
-st.caption("The map shows the approximate locations of the retail stores within the state of Massachusetts.")
+# Create small jitter for multiple stores in same city
+map_points = []
+for _, row in data.iterrows():
+    base_lat, base_lon = city_coords[row["City"]]
+    lat_jitter = np.random.uniform(-0.01, 0.01)
+    lon_jitter = np.random.uniform(-0.01, 0.01)
+    map_points.append({"lat": base_lat + lat_jitter, "lon": base_lon + lon_jitter})
+
+map_df = pd.DataFrame(map_points)
+
+st.subheader("Map of Massachusetts Store Locations")
+st.map(map_df)
+
+st.caption("Each dot represents a store location across Massachusetts cities.")
 
 # -----------------------------------------------------------
 # FOOTER

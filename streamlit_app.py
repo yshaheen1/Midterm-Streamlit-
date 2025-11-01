@@ -4,8 +4,8 @@ Library:    Streamlit
 URL:        https://docs.streamlit.io
 Description:
 Streamlit allows data scientists to create interactive dashboards quickly.
-This demo shows retail store performance across 10 Massachusetts cities,
-demonstrating how data, plots, and maps can work together in one workflow.
+This demo shows fictional retail store performance across Massachusetts
+over six months, combining data, charts, and mapping into one coherent story.
 """
 
 import streamlit as st
@@ -19,14 +19,13 @@ st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
 
 st.title("Massachusetts Retail Dashboard 🛒")
 st.write(
-    "This Streamlit demo shows fictional store performance data across multiple "
-    "cities in Massachusetts. It connects data tables, charts, and maps to tell one story."
+    "This Streamlit demo shows fictional retail performance data across multiple "
+    "cities in Massachusetts. It connects tables, charts, and maps to provide a complete analysis."
 )
 
 # -----------------------------------------------------------
 # CREATE DATA
 # -----------------------------------------------------------
-
 np.random.seed(42)
 
 cities_ma = [
@@ -34,7 +33,9 @@ cities_ma = [
     "Brockton", "Quincy", "New Bedford", "Fall River", "Lynn"
 ]
 
-# each city can have multiple stores
+months = ["January", "February", "March", "April", "May", "June"]
+
+# Each city can have multiple stores
 store_counts = np.random.randint(1, 4, size=len(cities_ma))  # 1–3 stores per city
 
 records = []
@@ -45,7 +46,7 @@ for city, count in zip(cities_ma, store_counts):
             "Store ID": f"{city[:3].upper()}-{store+1}",
             "Sales ($)": np.random.randint(40_000, 200_000),
             "Profit ($)": np.random.randint(5_000, 50_000),
-            "Month": np.random.choice(["January", "February", "March", "April"])
+            "Month": np.random.choice(months)
         })
 
 data = pd.DataFrame(records)
@@ -78,23 +79,33 @@ city_summary = (
 st.subheader("Average Sales and Profit by City")
 st.bar_chart(city_summary)
 
-# Replace scatter chart section with this
-st.subheader("Monthly Sales Trend")
-monthly_sales = data.groupby("Month")["Sales ($)"].sum().reindex(
-    ["January", "February", "March", "April"]
+# Monthly sales trend (across all stores)
+st.subheader("Total Monthly Sales Trend")
+monthly_sales = (
+    data.groupby("Month")["Sales ($)"]
+    .sum()
+    .reindex(months)
 )
 st.line_chart(monthly_sales)
-st.caption("This helps identify which months have the highest total sales across Massachusetts stores.")
+st.caption("Shows total sales growth and seasonality over six months.")
 
-
-st.caption("This helps identify which cities have strong sales but lower profit margins.")
+# Profit margin by city
+st.subheader("Average Profit Margin by City")
+data["Profit Margin (%)"] = (data["Profit ($)"] / data["Sales ($)"]) * 100
+margin_by_city = (
+    data.groupby("City")["Profit Margin (%)"]
+    .mean()
+    .sort_values(ascending=False)
+)
+st.bar_chart(margin_by_city)
+st.caption("Compares which cities are most efficient at turning sales into profit.")
 
 # -----------------------------------------------------------
 # SECTION 3 – MAPPING DEMO
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-# simple city coordinates (approximate lat/lon)
+# Approximate lat/lon for Massachusetts cities
 city_coords = {
     "Boston": (42.3601, -71.0589),
     "Cambridge": (42.3736, -71.1097),
@@ -108,7 +119,7 @@ city_coords = {
     "Lynn": (42.4668, -70.9495),
 }
 
-# Create small jitter for multiple stores in same city
+# Jitter coordinates for multiple stores per city
 map_points = []
 for _, row in data.iterrows():
     base_lat, base_lon = city_coords[row["City"]]
@@ -118,10 +129,9 @@ for _, row in data.iterrows():
 
 map_df = pd.DataFrame(map_points)
 
-st.subheader("Map of Massachusetts Store Locations")
+st.subheader("Store Map Across Massachusetts")
 st.map(map_df)
-
-st.caption("Each dot represents a store location across Massachusetts cities.")
+st.caption("Each dot represents a store location in Massachusetts.")
 
 # -----------------------------------------------------------
 # FOOTER

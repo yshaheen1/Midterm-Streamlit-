@@ -7,6 +7,9 @@ Streamlit allows users to create interactive data apps entirely with Python.
 This demo combines three examples — displaying a DataFrame, plotting charts, 
 and showing a map — to demonstrate how Streamlit helps data scientists explore and present data interactively.
 """
+import streamlit as st
+import pandas as pd
+import numpy as np
 
 # -----------------------------------------------------------
 # PAGE SETUP

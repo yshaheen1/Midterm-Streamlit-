@@ -1,10 +1,10 @@
 # Massachusetts Retail Dashboard – Streamlit Midterm Project
 
 **Author:** Yusuf Shaheen  
-**Course:** OIM 7502 – Business Analytics Programming (Spring 2025)  
+**Course:** OIM 7502 – Business Analytics Programming 
 **Library:** Streamlit  
-**GitHub Repository:** [Add your GitHub repo link here]  
-**Streamlit Cloud App:** [Add your deployed app link here]  
+**GitHub Repository:** [https://github.com/yshaheen1/Midterm-Streamlit-/tree/main]  
+**Streamlit Cloud App:** [https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/]  
 
 ---
 

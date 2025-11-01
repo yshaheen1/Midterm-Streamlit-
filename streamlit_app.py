@@ -1,12 +1,16 @@
 """
-Name:       Yusuf Shaheen
-Library:    Streamlit
-URL:        https://docs.streamlit.io
+Name:        Yusuf Shaheen
+Library:     Streamlit
+URL:         https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/
+
 Description:
-Streamlit allows data scientists to create interactive dashboards quickly.
-This demo shows fictional retail store performance across Massachusetts
-over six months, combining data, charts, and mapping into one coherent story.
+This library allows data scientists and analysts to build interactive web applications
+directly from Python scripts without any web development experience. Streamlit simplifies
+data visualization, reporting, and model deployment by providing intuitive components such as
+charts, tables, and interactive widgets. This project demonstrates its use in creating a
+Massachusetts Retail Dashboard for visualizing sales, profit trends, and store locations.
 """
+
 
 import streamlit as st
 import pandas as pd

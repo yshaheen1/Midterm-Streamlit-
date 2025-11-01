@@ -78,8 +78,14 @@ city_summary = (
 st.subheader("Average Sales and Profit by City")
 st.bar_chart(city_summary)
 
-st.subheader("Scatter Chart: Relationship Between Sales and Profit")
-st.scatter_chart(data, x="Sales ($)", y="Profit ($)")
+# Replace scatter chart section with this
+st.subheader("Monthly Sales Trend")
+monthly_sales = data.groupby("Month")["Sales ($)"].sum().reindex(
+    ["January", "February", "March", "April"]
+)
+st.line_chart(monthly_sales)
+st.caption("This helps identify which months have the highest total sales across Massachusetts stores.")
+
 
 st.caption("This helps identify which cities have strong sales but lower profit margins.")
 

@@ -12,9 +12,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# -----------------------------------------------------------
+
 # PAGE CONFIG
-# -----------------------------------------------------------
+
 st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
 
 st.title("Massachusetts Retail Dashboard")

@@ -21,7 +21,7 @@ import numpy as np
 # -----------------------------------------------------------
 st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
 
-st.title("Massachusetts Retail Dashboard 🛒")
+st.title("Massachusetts Retail Dashboard")
 st.write(
     "This Streamlit demo shows fictional retail performance data across multiple "
     "cities in Massachusetts. It connects tables, charts, and maps to provide a complete analysis."
@@ -105,38 +105,46 @@ st.bar_chart(margin_by_city)
 st.caption("Compares which cities are most efficient at turning sales into profit.")
 
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO
+# SECTION 3 – MAPPING DEMO (with automatic geocoding)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-# Approximate lat/lon for Massachusetts cities
-city_coords = {
-    "Boston": (42.3601, -71.0589),
-    "Cambridge": (42.3736, -71.1097),
-    "Worcester": (42.2626, -71.8023),
-    "Springfield": (42.1015, -72.5898),
-    "Lowell": (42.6334, -71.3162),
-    "Brockton": (42.0834, -71.0184),
-    "Quincy": (42.2529, -71.0023),
-    "New Bedford": (41.6362, -70.9342),
-    "Fall River": (41.7015, -71.1550),
-    "Lynn": (42.4668, -70.9495),
-}
+from geopy.geocoders import Nominatim
 
-# Jitter coordinates for multiple stores per city
+@st.cache_data
+def get_city_coordinates(cities):
+    """Fetch real latitude and longitude for each Massachusetts city."""
+    geolocator = Nominatim(user_agent="streamlit-demo")
+    coords = {}
+    for city in cities:
+        try:
+            location = geolocator.geocode(f"{city}, Massachusetts, USA")
+            if location:
+                coords[city] = (location.latitude, location.longitude)
+        except Exception:
+            pass
+    return coords
+
+# Get coordinates dynamically
+city_coords = get_city_coordinates(cities_ma)
+
+# Create map data with small random offsets for multiple stores per city
 map_points = []
 for _, row in data.iterrows():
-    base_lat, base_lon = city_coords[row["City"]]
-    lat_jitter = np.random.uniform(-0.01, 0.01)
-    lon_jitter = np.random.uniform(-0.01, 0.01)
-    map_points.append({"lat": base_lat + lat_jitter, "lon": base_lon + lon_jitter})
+    if row["City"] in city_coords:
+        base_lat, base_lon = city_coords[row["City"]]
+        lat_jitter = np.random.uniform(-0.005, 0.005)
+        lon_jitter = np.random.uniform(-0.005, 0.005)
+        map_points.append({"lat": base_lat + lat_jitter, "lon": base_lon + lon_jitter})
 
 map_df = pd.DataFrame(map_points)
 
-st.subheader("Store Map Across Massachusetts")
+st.subheader("Automatically Geocoded Store Map")
 st.map(map_df)
-st.caption("Each dot represents a store location in Massachusetts.")
-
+st.caption(
+    "Each dot represents a store location in Massachusetts. "
+    "City coordinates were retrieved automatically using the geopy library."
+)
 # -----------------------------------------------------------
 # FOOTER
 # -----------------------------------------------------------

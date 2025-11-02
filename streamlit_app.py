@@ -101,40 +101,41 @@ st.bar_chart(margin_by_city)
 st.caption("Compares which cities are most efficient at turning sales into profit.")
 
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO
+# SECTION 3 – MAPPING DEMO (stable version)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-# Approximate lat/lon for Massachusetts cities
-city_coords = {
-    "Boston": (42.3601, -71.0589),
-    "Cambridge": (42.3736, -71.1097),
-    "Worcester": (42.2626, -71.8023),
-    "Springfield": (42.1015, -72.5898),
-    "Lowell": (42.6334, -71.3162),
-    "Brockton": (42.0834, -71.0184),
-    "Quincy": (42.2529, -71.0023),
-    "New Bedford": (41.6362, -70.9342),
-    "Fall River": (41.7015, -71.1550),
-    "Lynn": (42.4668, -70.9495),
-}
+@st.cache_data
+def get_city_coordinates():
+    """Predefined coordinates for Massachusetts cities (no API calls)."""
+    return {
+        "Boston": (42.3601, -71.0589),
+        "Cambridge": (42.3736, -71.1097),
+        "Worcester": (42.2626, -71.8023),
+        "Springfield": (42.1015, -72.5898),
+        "Lowell": (42.6334, -71.3162),
+        "Brockton": (42.0834, -71.0184),
+        "Quincy": (42.2529, -71.0023),
+        "New Bedford": (41.6362, -70.9342),
+        "Fall River": (41.7015, -71.1550),
+        "Lynn": (42.4668, -70.9495),
+    }
 
-# Jitter coordinates for multiple stores per city
+city_coords = get_city_coordinates()
+
+# Create map data with slight random offsets for multiple stores per city
 map_points = []
 for _, row in data.iterrows():
     base_lat, base_lon = city_coords[row["City"]]
-    lat_jitter = np.random.uniform(-0.01, 0.01)
-    lon_jitter = np.random.uniform(-0.01, 0.01)
+    lat_jitter = np.random.uniform(-0.005, 0.005)
+    lon_jitter = np.random.uniform(-0.005, 0.005)
     map_points.append({"lat": base_lat + lat_jitter, "lon": base_lon + lon_jitter})
 
 map_df = pd.DataFrame(map_points)
 
-st.subheader("Store Map Across Massachusetts")
+st.subheader("Massachusetts Store Map")
 st.map(map_df)
-st.caption("Each dot represents a store location in Massachusetts.")
-
-# -----------------------------------------------------------
-# FOOTER
-# -----------------------------------------------------------
-st.write("---")
-st.caption("Created by Yusuf Shaheen — Babson College OIM 7502 Midterm Project")
+st.caption(
+    "Each dot represents a retail store location across Massachusetts cities. "
+    "Coordinates are preloaded for consistent, fast mapping."
+)

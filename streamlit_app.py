@@ -135,5 +135,4 @@ st.subheader("Massachusetts Store Map")
 st.map(map_df)
 st.caption(
     "Each dot represents a retail store location across Massachusetts cities. "
-    "Coordinates are preloaded for consistent, fast mapping."
 )

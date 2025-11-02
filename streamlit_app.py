@@ -1,11 +1,11 @@
 """
 Name:       Yusuf Shaheen
 Library:    Streamlit
-URL:        https://docs.streamlit.io
+URL:        https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/
 Description:
 Streamlit allows data scientists to create interactive dashboards quickly.
 This demo shows fictional retail store performance across Massachusetts
-over six months, combining data, charts, and mapping into one coherent story.
+over six months, combining data, charts, and mapping.
 """
 
 import streamlit as st
@@ -17,15 +17,14 @@ import numpy as np
 # -----------------------------------------------------------
 st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
 
-st.title("Massachusetts Retail Dashboard 🛒")
+st.title("Massachusetts Retail Dashboard")
 st.write(
     "This Streamlit demo shows fictional retail performance data across multiple "
     "cities in Massachusetts. It connects tables, charts, and maps to provide a complete analysis."
 )
 
-# -----------------------------------------------------------
 # CREATE DATA
-# -----------------------------------------------------------
+
 np.random.seed(42)
 
 cities_ma = [
@@ -36,6 +35,7 @@ cities_ma = [
 months = ["January", "February", "March", "April", "May", "June"]
 
 # Each city can have multiple stores
+
 store_counts = np.random.randint(1, 4, size=len(cities_ma))  # 1–3 stores per city
 
 records = []
@@ -51,9 +51,8 @@ for city, count in zip(cities_ma, store_counts):
 
 data = pd.DataFrame(records)
 
-# -----------------------------------------------------------
 # SECTION 1 – DATAFRAME DEMO
-# -----------------------------------------------------------
+
 st.header("1. Store Performance Data")
 
 st.subheader("Retail Stores Across Massachusetts")
@@ -64,9 +63,9 @@ col1.metric("Total Stores", f"{data.shape[0]}")
 col2.metric("Total Sales", f"${data['Sales ($)'].sum():,}")
 col3.metric("Average Profit Margin", f"{(data['Profit ($)'].sum()/data['Sales ($)'].sum())*100:.1f}%")
 
-# -----------------------------------------------------------
+
 # SECTION 2 – PLOTTING DEMO
-# -----------------------------------------------------------
+
 st.header("2. Sales and Profit Visualizations")
 
 # Average performance per city
@@ -100,14 +99,14 @@ margin_by_city = (
 st.bar_chart(margin_by_city)
 st.caption("Compares which cities are most efficient at turning sales into profit.")
 
-# -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (stable version)
-# -----------------------------------------------------------
+
+# SECTION 3 – MAPPING DEMO 
+
 st.header("3. Massachusetts Store Locations")
 
 @st.cache_data
 def get_city_coordinates():
-    """Predefined coordinates for Massachusetts cities (no API calls)."""
+    """Predefined coordinates for Massachusetts cities."""
     return {
         "Boston": (42.3601, -71.0589),
         "Cambridge": (42.3736, -71.1097),
@@ -123,7 +122,6 @@ def get_city_coordinates():
 
 city_coords = get_city_coordinates()
 
-# Create map data with slight random offsets for multiple stores per city
 map_points = []
 for _, row in data.iterrows():
     base_lat, base_lon = city_coords[row["City"]]

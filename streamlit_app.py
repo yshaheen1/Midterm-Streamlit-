@@ -91,7 +91,7 @@ st.caption(
 )
 
 # -----------------------------------------------------------
-# DEMO 3 – MAPPING DEMO (Revenue-based Coloring - fixed)
+# DEMO 3 – MAPPING DEMO (Revenue-based Coloring - FINAL FIX)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 st.markdown("#### Map Colored by Revenue Levels")
@@ -105,14 +105,16 @@ if selected_type != "All":
 else:
     filtered_data = map_data.copy()
 
-# --- Create hex color column based on revenue (before plotting) ---
+# Normalize revenue to create a gradient color (lighter = low, darker = high)
 min_rev, max_rev = map_data["Revenue ($)"].min(), map_data["Revenue ($)"].max()
 
-def revenue_to_hex(rev):
+def revenue_to_rgb(rev):
+    # Scale intensity from 0–255 (lower revenue → lighter, higher → darker)
     intensity = int(255 - ((rev - min_rev) / (max_rev - min_rev)) * 180)
-    return f"#FF00{intensity:02X}"  # darker magenta = higher revenue
+    # Return RGB list (magenta hue that darkens with revenue)
+    return [255, 0, intensity]
 
-filtered_data["color"] = filtered_data["Revenue ($)"].apply(revenue_to_hex)
+filtered_data["color"] = filtered_data["Revenue ($)"].apply(revenue_to_rgb)
 
 # --- Display metrics and map ---
 col1, col2 = st.columns([1, 2])
@@ -123,10 +125,11 @@ with col1:
     st.metric("Average Revenue", f"${filtered_data['Revenue ($)'].mean():,.0f}")
 
 with col2:
-    st.map(filtered_data, color=filtered_data["color"], size=10)
+    # Pass the list-of-RGB color column directly to st.map()
+    st.map(filtered_data, color="color", size=10)
 
 st.caption(
-    "The map visualizes Massachusetts retail stores, with each dot colored by revenue. "
-    "Darker magenta indicates higher revenue levels."
+    "Each dot represents a retail store, colored by revenue (darker magenta = higher revenue). "
+    "The map updates dynamically based on the selected store type."
 )
 

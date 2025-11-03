@@ -8,17 +8,17 @@ This demo shows fictional retail store performance across Massachusetts
 over six months, combining data, charts, and mapping.
 """
 
-# -----------------------------------------------------------
+
 # IMPORTS
-# -----------------------------------------------------------
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
 
-# -----------------------------------------------------------
+
 # DATASET CREATION (shared across all demos)
-# -----------------------------------------------------------
+
 np.random.seed(42)
 
 store_types = ["Grocery", "Clothing", "Electronics", "Pharmacy", "Sports"]
@@ -34,13 +34,12 @@ map_data = pd.DataFrame({
 # Generate revenue as a fraction of sales with variability
 map_data["Revenue ($)"] = (map_data["Sales ($)"] * np.random.uniform(0.5, 0.9, num_stores)).astype(int)
 
-# -----------------------------------------------------------
-# DEMO 1 – DATAFRAME OVERVIEW
-# -----------------------------------------------------------
-st.header("1. Retail Store Data Overview")
-st.markdown("#### Explore the Massachusetts Retail Dataset")
 
-st.dataframe(map_data, use_container_width=True)
+# DEMO 1 – DATAFRAME OVERVIEW
+
+st.header("1. Retail Store Data Overview")
+st.markdown("#### Explore the Boston Retail Dataset")
+
 st.dataframe(map_data.drop(columns=["lat", "lon"]), use_container_width=True) # Hide latitude and longitude when displaying
 
 # KPIs
@@ -56,13 +55,13 @@ col3.metric("Revenue Margin (%)", f"{avg_margin:.1f}%")
 
 
 st.caption(
-    "The dataset contains 100 simulated Massachusetts retail stores, "
+    "The dataset contains 100 simulated Boston retail stores, "
     "each with randomly assigned categories, sales, and revenue values."
 )
 
-# -----------------------------------------------------------
-# DEMO 2 – VISUALIZATION ANALYTICS  (fixed for Altair 5)
-# -----------------------------------------------------------
+
+# DEMO 2 – VISUALIZATION ANALYTICS  
+
 st.header("2. Sales and Revenue Analytics")
 st.markdown("#### Store Performance by Type")
 
@@ -121,10 +120,10 @@ st.caption(
 
 
 
-# -----------------------------------------------------------
-# DEMO 3 – MAPPING DEMO (Single Color Version)
-# -----------------------------------------------------------
-st.header("3. Massachusetts Store Locations")
+
+# DEMO 3 – MAPPING DEMO 
+
+st.header("3. Boston Store Locations")
 st.markdown("#### Retail Store Map (Single Color)")
 
 # Dropdown to filter store type
@@ -148,7 +147,7 @@ with col2:
     st.map(filtered_data, color=(255, 0, 130), size=10)
 
 st.caption(
-    "Each dot represents a retail store location across Massachusetts. "
+    "Each dot represents a retail store location across Boston. "
     "All stores share the same magenta color for simplicity, while revenue and sales are shown in the metrics above."
 )
 

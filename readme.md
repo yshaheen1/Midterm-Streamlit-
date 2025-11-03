@@ -41,9 +41,10 @@ streamlit run My_Streamlit_File.py
 
 - Once this script is ran, a local Streamlit server will be created in a new tab on your default web browser. This is where the user interaction occurs. This browser page is the GUI.
 - You can also pass a URL. This allows you to connect to GitHub
+- Streamlit needs to be ran through the command prompt or anaconda prompt to setup the local URL. At time of execution, the python file needs to be specified.
+
 
 Note: All data shown in this dashboard is synthetic and generated within the script for demonstration purposes. No external CSV or proprietary data was used.
 streamlit run https://www.github.com/user/My_streamlit_file.py
-- Streamlit needs to be ran through the command prompt or anaconda prompt to setup the local URL. At time of execution, the python file needs to be specified.
 
 

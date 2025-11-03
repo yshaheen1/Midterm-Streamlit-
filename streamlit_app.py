@@ -98,88 +98,48 @@ st.bar_chart(margin_by_city)
 st.caption("Compares which cities are most efficient at turning sales into profit.")
 
 
-# SECTION 3 – MAPPING DEMO 
-
-st.header("3. Massachusetts Store Locations")
-
-@st.cache_data
-def get_city_coordinates():
-    """Predefined coordinates for Massachusetts cities."""
-    return {
-        "Boston": (42.3601, -71.0589),
-        "Cambridge": (42.3736, -71.1097),
-        "Worcester": (42.2626, -71.8023),
-        "Springfield": (42.1015, -72.5898),
-        "Lowell": (42.6334, -71.3162),
-        "Brockton": (42.0834, -71.0184),
-        "Quincy": (42.2529, -71.0023),
-        "New Bedford": (41.6362, -70.9342),
-        "Fall River": (41.7015, -71.1550),
-        "Lynn": (42.4668, -70.9495),
-    }
-
-city_coords = get_city_coordinates()
-
-map_points = []
-for _, row in data.iterrows():
-    base_lat, base_lon = city_coords[row["City"]]
-    lat_jitter = np.random.uniform(-0.005, 0.005)
-    lon_jitter = np.random.uniform(-0.005, 0.005)
-    map_points.append({"lat": base_lat + lat_jitter, "lon": base_lon + lon_jitter})
-
-map_df = pd.DataFrame(map_points)
-
-st.subheader("Massachusetts Store Map")
-st.map(map_df)
-st.caption(
-    "Each dot represents a retail store location across Massachusetts cities. "
-)
-
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (simple and fast)
+# SECTION 3 – MAPPING DEMO (Locked at 100 Stores)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
 st.markdown("#### Plot a Map")
 
-# Generate random map points centered around Boston
+# Create 100 random store locations centered near Boston
 map_data = pd.DataFrame(
-    np.random.randn(1000, 2) / [50, 50] + [42.36, -71.06],
+    np.random.randn(100, 2) / [50, 50] + [42.36, -71.06],
     columns=["lat", "lon"]
 )
 
+# Display the map
 st.map(map_data, color=(255, 0, 130), size=10)
 
 st.caption(
-    "This map shows 1,000 random store locations generated around Boston. "
-    "In real-world applications, Streamlit can map actual store or customer locations using coordinates."
+    "This map displays 100 simulated store locations distributed around Boston, Massachusetts. "
+    "It demonstrates Streamlit’s ability to visualize geospatial data easily using the built-in `st.map()` function."
 )
 
 # -----------------------------------------------------------
-# WIDGETS DEMO (bonus section to show interactivity)
+# BASIC WIDGETS (to demonstrate interactivity)
 # -----------------------------------------------------------
-st.markdown("### Now Let's Look at Widgets")
+st.markdown("### Interactive Widgets")
 
-st.markdown("#### Sliders")
+st.markdown("#### Sliders Example")
 
-# Create three columns with sliders (like in the Streamlit example)
+# Create three columns for visual balance
 left_col, middle_col, right_col = st.columns(3)
 
 with left_col:
-    value1 = st.slider("Select radius", 1, 20, 10)
+    radius = st.slider("Zoom Radius", 1, 20, 10)
 with middle_col:
-    value2 = st.slider("Number of points", 100, 2000, 1000, step=100)
+    color_intensity = st.slider("Color Intensity", 50, 255, 130)
 with right_col:
-    value3 = st.slider("Map color intensity", 50, 255, 130)
+    city_focus = st.selectbox("City Focus", ["Boston", "Cambridge", "Worcester", "Springfield"])
 
-st.write(f"Radius: {value1}, Points: {value2}, Color intensity: {value3}")
+# Re-render map with same 100 stores but updated color and zoom context
+st.map(map_data, color=(255, 0, color_intensity), size=10)
 
-# Update map interactively based on user input
-updated_map = pd.DataFrame(
-    np.random.randn(value2, 2) / [value1 * 5, value1 * 5] + [42.36, -71.06],
-    columns=["lat", "lon"]
+st.caption(
+    f"Zoom radius: {radius}, City focus: {city_focus}. "
+    "Widgets allow users to adjust visualization settings interactively."
 )
-st.map(updated_map, color=(255, 0, value3), size=10)
-
-st.caption("Use the sliders above to adjust the map’s density and color dynamically.")
-

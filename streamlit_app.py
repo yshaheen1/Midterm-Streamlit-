@@ -105,16 +105,18 @@ if selected_type != "All":
 else:
     filtered_data = map_data
 
-# Normalize revenue for color intensity (darker = higher revenue)
+# Normalize revenue to create a gradient color (lighter = low, darker = high)
 min_rev, max_rev = map_data["Revenue ($)"].min(), map_data["Revenue ($)"].max()
-filtered_data["Color Intensity"] = (
-    ((filtered_data["Revenue ($)"] - min_rev) / (max_rev - min_rev)) * 255
-).astype(int)
 
-# Assign RGB colors (magenta tone that darkens with revenue)
-filtered_data["color"] = filtered_data["Color Intensity"].apply(
-    lambda x: (255, 0, 255 - x // 2)
-)
+def revenue_to_hex(rev):
+    intensity = int(255 - ((rev - min_rev) / (max_rev - min_rev)) * 180)
+    # Produce magenta-like shades with varying darkness
+    return f"#FF00{intensity:02X}"
+
+filtered_data["color"] = filtered_data["Revenue ($)"].apply(revenue_to_hex)
+
+# Plot with dynamic colors
+st.map(filtered_data, color=filtered_data["color"], size=10)
 
 # Display KPIs and map
 col1, col2 = st.columns([1, 2])

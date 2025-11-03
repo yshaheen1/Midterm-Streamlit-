@@ -153,7 +153,6 @@ st.caption(
 
 
 st.caption(
-    "Each dot represents a retail store, colored by revenue (darker magenta = higher revenue). "
     "The map updates dynamically based on the selected store type."
 )
 

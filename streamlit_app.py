@@ -49,53 +49,60 @@ for city, count in zip(cities_ma, store_counts):
 
 data = pd.DataFrame(records)
 
-# SECTION 1 – DATAFRAME DEMO
+# -----------------------------------------------------------
+# SECTION 1 – DATAFRAME DEMO (Store Overview)
+# -----------------------------------------------------------
+st.header("1. Retail Store Data Overview")
 
-st.header("1. Store Performance Data")
+st.markdown("#### Explore the Retail Store Dataset")
 
-st.subheader("Retail Stores Across Massachusetts")
-st.dataframe(data, use_container_width=True)
+# Reuse map_data generated in Demo 3
+st.dataframe(map_data, use_container_width=True)
 
+# Calculate summary stats
+total_stores = map_data.shape[0]
+store_type_counts = map_data["Store Type"].value_counts()
+top_type = store_type_counts.idxmax()
+top_count = store_type_counts.max()
+
+# KPI metrics
 col1, col2, col3 = st.columns(3)
-col1.metric("Total Stores", f"{data.shape[0]}")
-col2.metric("Total Sales", f"${data['Sales ($)'].sum():,}")
-col3.metric("Average Profit Margin", f"{(data['Profit ($)'].sum()/data['Sales ($)'].sum())*100:.1f}%")
+col1.metric("Total Stores", total_stores)
+col2.metric("Most Common Type", top_type)
+col3.metric("Count of Top Type", top_count)
 
-
-# SECTION 2 – PLOTTING DEMO
-
-st.header("2. Sales and Profit Visualizations")
-
-# Average performance per city
-city_summary = (
-    data.groupby("City")[["Sales ($)", "Profit ($)"]]
-    .mean()
-    .sort_values("Sales ($)", ascending=False)
+st.caption(
+    "This dataset contains 100 simulated retail stores across Massachusetts. "
+    "Each store is randomly assigned a category and geographic coordinates. "
+    "KPIs summarize total store count and category distribution."
 )
 
-st.subheader("Average Sales and Profit by City")
-st.bar_chart(city_summary)
 
-# Monthly sales trend (across all stores)
-st.subheader("Total Monthly Sales Trend")
-monthly_sales = (
-    data.groupby("Month")["Sales ($)"]
-    .sum()
-    .reindex(months)
-)
-st.line_chart(monthly_sales)
-st.caption("Shows total sales growth and seasonality over six months.")
+# -----------------------------------------------------------
+# SECTION 2 – VISUALIZATION DEMO (Store Analytics)
+# -----------------------------------------------------------
+st.header("2. Retail Store Distribution and Analysis")
 
-# Profit margin by city
-st.subheader("Average Profit Margin by City")
-data["Profit Margin (%)"] = (data["Profit ($)"] / data["Sales ($)"]) * 100
-margin_by_city = (
-    data.groupby("City")["Profit Margin (%)"]
-    .mean()
-    .sort_values(ascending=False)
+st.markdown("#### Store Count by Retail Type")
+
+# Bar chart: number of stores per category
+type_counts = map_data["Store Type"].value_counts().reset_index()
+type_counts.columns = ["Store Type", "Count"]
+
+st.bar_chart(type_counts.set_index("Store Type"))
+
+st.markdown("#### Store Distribution by Region (Latitude)")
+
+# Line chart: average latitude per store type (simulating north-south spread)
+lat_summary = map_data.groupby("Store Type")["lat"].mean().reset_index()
+lat_summary = lat_summary.sort_values("lat", ascending=False)
+st.line_chart(lat_summary.set_index("Store Type"))
+
+st.caption(
+    "The bar chart shows how stores are distributed by category, "
+    "while the line chart highlights how store types are geographically positioned across Massachusetts."
 )
-st.bar_chart(margin_by_city)
-st.caption("Compares which cities are most efficient at turning sales into profit.")
+
 
 
 # -----------------------------------------------------------

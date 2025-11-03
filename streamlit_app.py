@@ -25,7 +25,7 @@ st.write(
 
 # CREATE DATA
 
-np.random.seed(42)
+np.random.seed(42) # ensures that the sales numbers, profit margins, and map points don’t change each time the app runs
 
 cities_ma = [
     "Boston", "Cambridge", "Worcester", "Springfield", "Lowell",
@@ -34,9 +34,7 @@ cities_ma = [
 
 months = ["January", "February", "March", "April", "May", "June"]
 
-# Each city can have multiple stores
-
-store_counts = np.random.randint(1, 4, size=len(cities_ma))  # 1–3 stores per city
+store_counts = np.random.randint(1, 4, size=len(cities_ma))  # Each city can have multiple stores
 
 records = []
 for city, count in zip(cities_ma, store_counts):

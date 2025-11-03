@@ -59,25 +59,30 @@ st.caption(
 )
 
 # -----------------------------------------------------------
-# DEMO 2 – VISUALIZATION ANALYTICS
+# DEMO 2 – VISUALIZATION ANALYTICS  (fixed for Altair 5)
 # -----------------------------------------------------------
 st.header("2. Sales and Revenue Analytics")
 st.markdown("#### Store Performance by Type")
 
-# Bar chart – Total sales and revenue by category
+# Aggregate total sales and revenue by store category
 agg = map_data.groupby("Store Type")[["Sales ($)", "Revenue ($)"]].sum().reset_index()
 
+# Melt the dataframe so Altair can read Metric / Value pairs
+agg_melted = agg.melt(id_vars="Store Type", var_name="Metric", value_name="Value")
+
+# Bar chart comparing total Sales vs Revenue by category
 chart = (
-    alt.Chart(agg)
-    .transform_fold(["Sales ($)", "Revenue ($)"], as_=["Metric", "Value"])
+    alt.Chart(agg_melted)
     .mark_bar()
     .encode(
         x=alt.X("Store Type:N", title="Retail Category"),
         y=alt.Y("Value:Q", title="Amount ($)"),
-        color="Metric:N",
+        color=alt.Color("Metric:N", title="Metric"),
+        column=alt.Column("Metric:N", title=None),
         tooltip=["Store Type", "Metric", "Value"]
     )
     .properties(title="Total Sales and Revenue by Store Type")
+    .configure_axis(labelFontSize=12, titleFontSize=12)
 )
 st.altair_chart(chart, use_container_width=True)
 

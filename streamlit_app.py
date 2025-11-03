@@ -1,5 +1,22 @@
+"""
+Name:       Yusuf Shaheen
+Library:    Streamlit
+URL:        https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/
+Description:
+Streamlit allows data scientists to create interactive dashboards quickly.
+This demo shows fictional retail store performance across Boston, combining data, charts, and mapping.
+"""
+
 # -----------------------------------------------------------
-# HEADER / INFO SECTION (visible in app)
+# IMPORTS
+# -----------------------------------------------------------
+import streamlit as st
+import pandas as pd
+import numpy as np
+import altair as alt
+
+# -----------------------------------------------------------
+# HEADER / INFO SECTION (VISIBLE IN APP)
 # -----------------------------------------------------------
 st.markdown("""
 ### 📊 Massachusetts Retail Dashboard
@@ -10,7 +27,7 @@ st.markdown("""
 Streamlit allows data scientists to create interactive dashboards quickly.  
 This demo shows fictional retail store performance across Boston, combining data, charts, and mapping.
 """)
-st.divider()  # horizontal line for separation
+st.divider()
 
 
 

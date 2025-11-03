@@ -45,6 +45,5 @@ streamlit run My_Streamlit_File.py
 
 
 Note: All data shown in this dashboard is synthetic and generated within the script for demonstration purposes. No external CSV or proprietary data was used.
-streamlit run https://www.github.com/user/My_streamlit_file.py
 
 

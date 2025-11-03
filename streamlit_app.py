@@ -134,3 +134,52 @@ st.map(map_df)
 st.caption(
     "Each dot represents a retail store location across Massachusetts cities. "
 )
+
+# -----------------------------------------------------------
+# SECTION 3 – MAPPING DEMO (simple and fast)
+# -----------------------------------------------------------
+st.header("3. Massachusetts Store Locations")
+
+st.markdown("#### Plot a Map")
+
+# Generate random map points centered around Boston
+map_data = pd.DataFrame(
+    np.random.randn(1000, 2) / [50, 50] + [42.36, -71.06],
+    columns=["lat", "lon"]
+)
+
+st.map(map_data, color=(255, 0, 130), size=10)
+
+st.caption(
+    "This map shows 1,000 random store locations generated around Boston. "
+    "In real-world applications, Streamlit can map actual store or customer locations using coordinates."
+)
+
+# -----------------------------------------------------------
+# WIDGETS DEMO (bonus section to show interactivity)
+# -----------------------------------------------------------
+st.markdown("### Now Let's Look at Widgets")
+
+st.markdown("#### Sliders")
+
+# Create three columns with sliders (like in the Streamlit example)
+left_col, middle_col, right_col = st.columns(3)
+
+with left_col:
+    value1 = st.slider("Select radius", 1, 20, 10)
+with middle_col:
+    value2 = st.slider("Number of points", 100, 2000, 1000, step=100)
+with right_col:
+    value3 = st.slider("Map color intensity", 50, 255, 130)
+
+st.write(f"Radius: {value1}, Points: {value2}, Color intensity: {value3}")
+
+# Update map interactively based on user input
+updated_map = pd.DataFrame(
+    np.random.randn(value2, 2) / [value1 * 5, value1 * 5] + [42.36, -71.06],
+    columns=["lat", "lon"]
+)
+st.map(updated_map, color=(255, 0, value3), size=10)
+
+st.caption("Use the sliders above to adjust the map’s density and color dynamically.")
+

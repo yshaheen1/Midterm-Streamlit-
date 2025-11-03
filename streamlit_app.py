@@ -92,24 +92,33 @@ st.caption(
     "The bar chart compares total sales and revenue by store category, "
 )
 
-st.markdown("#### Sales vs Revenue Correlation")
+st.markdown("#### Profit Margin by Store Type")
 
-scatter_chart = (
-    alt.Chart(map_data)
-    .mark_circle(size=80, color="#FF0082", opacity=0.6)
+# Calculate profit margin per store
+map_data["Profit Margin (%)"] = (map_data["Revenue ($)"] / map_data["Sales ($)"]) * 100
+
+# Average margin per category
+margin_summary = map_data.groupby("Store Type")["Profit Margin (%)"].mean().reset_index()
+
+# Horizontal bar chart
+margin_chart = (
+    alt.Chart(margin_summary)
+    .mark_bar(color="#FF0082")
     .encode(
-        x=alt.X("Sales ($):Q", title="Sales ($)"),
-        y=alt.Y("Revenue ($):Q", title="Revenue ($)"),
-        tooltip=["Store Type", "Sales ($)", "Revenue ($)"]
+        x=alt.X("Profit Margin (%):Q", title="Average Profit Margin (%)"),
+        y=alt.Y("Store Type:N", sort="-x", title="Store Type"),
+        tooltip=["Store Type", "Profit Margin (%)"]
     )
-    .properties(title="Correlation Between Sales and Revenue per Store")
+    .properties(title="Average Profit Margin by Store Type")
 )
-st.altair_chart(scatter_chart, use_container_width=True)
+st.altair_chart(margin_chart, use_container_width=True)
 
 st.caption(
-    "Each dot represents a single store. The scatter plot shows how revenue typically grows with sales, "
-    "revealing overall business performance and variability across stores."
+    "This chart highlights which retail categories are most efficient at converting sales into revenue. "
+    "Higher profit margins indicate stronger financial performance relative to total sales."
 )
+
+
 
 
 # -----------------------------------------------------------

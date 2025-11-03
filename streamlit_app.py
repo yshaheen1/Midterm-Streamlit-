@@ -1,12 +1,17 @@
-"""
-Name:       Yusuf Shaheen
-Library:    Streamlit
-URL:        https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/
-Description:
-Streamlit allows data scientists to create interactive dashboards quickly.
+# -----------------------------------------------------------
+# HEADER / INFO SECTION (visible in app)
+# -----------------------------------------------------------
+st.markdown("""
+### 📊 Massachusetts Retail Dashboard
+**Name:** Yusuf Shaheen  
+**Library:** Streamlit  
+**App URL:** [https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/](https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/)  
+**Description:**  
+Streamlit allows data scientists to create interactive dashboards quickly.  
 This demo shows fictional retail store performance across Boston, combining data, charts, and mapping.
+""")
+st.divider()  # horizontal line for separation
 
-"""
 
 
 # IMPORTS

@@ -91,35 +91,42 @@ st.caption(
 )
 
 # -----------------------------------------------------------
-# DEMO 3 – MAPPING DEMO (Revenue-based Coloring)
+# DEMO 3 – MAPPING DEMO (Revenue-based Coloring - fixed)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
-
 st.markdown("#### Map Colored by Revenue Levels")
 
 # Dropdown to filter store type
 selected_type = st.selectbox("Select a Retail Store Type", ["All"] + store_types)
 
+# Filter data
 if selected_type != "All":
-    filtered_data = map_data[map_data["Store Type"] == selected_type]
+    filtered_data = map_data[map_data["Store Type"] == selected_type].copy()
 else:
-    filtered_data = map_data
+    filtered_data = map_data.copy()
 
-st.map(filtered_data, color=(255, 0, 130), size=10)
+# --- Create hex color column based on revenue (before plotting) ---
+min_rev, max_rev = map_data["Revenue ($)"].min(), map_data["Revenue ($)"].max()
 
-# Plot with dynamic colors
-st.map(filtered_data, color=filtered_data["color"], size=10)
+def revenue_to_hex(rev):
+    intensity = int(255 - ((rev - min_rev) / (max_rev - min_rev)) * 180)
+    return f"#FF00{intensity:02X}"  # darker magenta = higher revenue
 
-# Display KPIs and map
+filtered_data["color"] = filtered_data["Revenue ($)"].apply(revenue_to_hex)
+
+# --- Display metrics and map ---
 col1, col2 = st.columns([1, 2])
+
 with col1:
     st.metric("Total Stores", f"{filtered_data.shape[0]}")
     st.metric("Total Revenue", f"${filtered_data['Revenue ($)'].sum():,.0f}")
     st.metric("Average Revenue", f"${filtered_data['Revenue ($)'].mean():,.0f}")
+
 with col2:
     st.map(filtered_data, color=filtered_data["color"], size=10)
 
 st.caption(
-    "The map visualizes 100 Massachusetts retail stores. "
-    "Each dot represents a store, with darker magenta shades indicating higher revenue."
+    "The map visualizes Massachusetts retail stores, with each dot colored by revenue. "
+    "Darker magenta indicates higher revenue levels."
 )
+

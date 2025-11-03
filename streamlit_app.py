@@ -23,31 +23,20 @@ st.write(
     "cities in Massachusetts. It connects tables, charts, and maps to provide a complete analysis."
 )
 
-# CREATE DATA
+# -----------------------------------------------------------
+# DATASET CREATION (shared across all demos)
+# -----------------------------------------------------------
+np.random.seed(42)
 
-np.random.seed(42) # ensures that the sales numbers, profit margins, and map points don’t change each time the app runs
+store_types = ["Grocery", "Clothing", "Electronics", "Pharmacy", "Sports"]
+num_stores = 100
 
-cities_ma = [
-    "Boston", "Cambridge", "Worcester", "Springfield", "Lowell",
-    "Brockton", "Quincy", "New Bedford", "Fall River", "Lynn"
-]
+map_data = pd.DataFrame({
+    "lat": np.random.randn(num_stores) / 50 + 42.36,
+    "lon": np.random.randn(num_stores) / 50 - 71.06,
+    "Store Type": np.random.choice(store_types, num_stores)
+})
 
-months = ["January", "February", "March", "April", "May", "June"]
-
-store_counts = np.random.randint(1, 4, size=len(cities_ma))  # Each city can have multiple stores
-
-records = []
-for city, count in zip(cities_ma, store_counts):
-    for store in range(count):
-        records.append({
-            "City": city,
-            "Store ID": f"{city[:3].upper()}-{store+1}",
-            "Sales ($)": np.random.randint(40_000, 200_000),
-            "Profit ($)": np.random.randint(5_000, 50_000),
-            "Month": np.random.choice(months)
-        })
-
-data = pd.DataFrame(records)
 
 # -----------------------------------------------------------
 # SECTION 1 – DATAFRAME DEMO (Store Overview)

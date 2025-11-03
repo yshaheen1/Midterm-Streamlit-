@@ -8,10 +8,11 @@ This demo shows fictional retail store performance across Boston, combining data
 """
 
 
-# HEADER / INFO SECTION 
-
+# -----------------------------------------------------------
+# HEADER / INFO SECTION (VISIBLE IN APP)
+# -----------------------------------------------------------
 st.markdown("""
-### Boston Retail Dashboard
+### 📊 Massachusetts Retail Dashboard
 **Name:** Yusuf Shaheen  
 **Library:** Streamlit  
 **App URL:** [https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/](https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/)  
@@ -20,7 +21,6 @@ Streamlit allows data scientists to create interactive dashboards quickly.
 This demo shows fictional retail store performance across Boston, combining data, charts, and mapping.
 """)
 st.divider()
-
 
 
 # IMPORTS

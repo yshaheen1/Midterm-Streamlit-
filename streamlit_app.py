@@ -105,15 +105,7 @@ if selected_type != "All":
 else:
     filtered_data = map_data
 
-# Normalize revenue to create a gradient color (lighter = low, darker = high)
-min_rev, max_rev = map_data["Revenue ($)"].min(), map_data["Revenue ($)"].max()
-
-def revenue_to_hex(rev):
-    intensity = int(255 - ((rev - min_rev) / (max_rev - min_rev)) * 180)
-    # Produce magenta-like shades with varying darkness
-    return f"#FF00{intensity:02X}"
-
-filtered_data["color"] = filtered_data["Revenue ($)"].apply(revenue_to_hex)
+st.map(filtered_data, color=(255, 0, 130), size=10)
 
 # Plot with dynamic colors
 st.map(filtered_data, color=filtered_data["color"], size=10)

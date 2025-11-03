@@ -47,6 +47,7 @@ map_data = pd.DataFrame({
 # Generate revenue as a fraction of sales with variability
 map_data["Revenue ($)"] = (map_data["Sales ($)"] * np.random.uniform(0.5, 0.9, num_stores)).astype(int)
 
+st.divider()
 
 # DEMO 1 – DATAFRAME OVERVIEW
 
@@ -72,6 +73,8 @@ st.caption(
     "each with randomly assigned categories, sales, and revenue values."
 )
 
+
+st.divider()
 
 # DEMO 2 – VISUALIZATION ANALYTICS  
 
@@ -131,8 +134,7 @@ st.caption(
 )
 
 
-
-
+st.divider()
 
 # DEMO 3 – MAPPING DEMO 
 

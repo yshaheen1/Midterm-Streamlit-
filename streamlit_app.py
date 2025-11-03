@@ -99,71 +99,53 @@ st.caption("Compares which cities are most efficient at turning sales into profi
 
 
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (100 Stores + Widget Interaction)
+# SECTION 3 – MAPPING DEMO (Interactive City Slider)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-st.markdown("#### Plot a Map")
+st.markdown("#### Interactive Map of Stores by City")
 
-# Create 100 random store locations centered near Boston
-map_data = pd.DataFrame(
-    np.random.randn(100, 2) / [50, 50] + [42.36, -71.06],
-    columns=["lat", "lon"]
-)
+# Predefined Massachusetts cities with coordinates
+city_coords = {
+    "Boston": (42.3601, -71.0589),
+    "Cambridge": (42.3736, -71.1097),
+    "Worcester": (42.2626, -71.8023),
+    "Springfield": (42.1015, -72.5898),
+    "Lowell": (42.6334, -71.3162),
+    "Brockton": (42.0834, -71.0184),
+    "Quincy": (42.2529, -71.0023),
+    "New Bedford": (41.6362, -70.9342),
+    "Fall River": (41.7015, -71.1550),
+    "Lynn": (42.4668, -70.9495),
+}
 
-# Display the map with fixed color and point size
-st.map(map_data, color=(255, 0, 130), size=10)
+# Create a bordered container for the widget controls
+with st.container(border=True):
+    st.markdown("#### Use the slider below to select how many cities to display:")
+    num_cities = st.slider("Number of cities to plot", 1, len(city_coords), 5)
 
-st.caption(
-    "This map displays 100 simulated store locations distributed around Boston, Massachusetts. "
-    "It demonstrates Streamlit’s ability to visualize geographic data using the built-in `st.map()` function."
-)
+# Select the top N cities based on slider value
+selected_cities = list(city_coords.items())[:num_cities]
 
-# -----------------------------------------------------------
-# INTERACTIVE WIDGETS DEMO (Inspired by Streamlit Sample)
-# -----------------------------------------------------------
-st.markdown("### Interactive Widgets and Columns")
-st.markdown("#### Sliders with Containers")
+# Generate random store locations around selected cities
+map_points = []
+for city, (lat, lon) in selected_cities:
+    for _ in range(10):  # 10 stores per city
+        lat_jitter = np.random.uniform(-0.01, 0.01)
+        lon_jitter = np.random.uniform(-0.01, 0.01)
+        map_points.append({"City": city, "lat": lat + lat_jitter, "lon": lon + lon_jitter})
 
-# Create a three-column layout
-left_column, middle_column, right_column = st.columns(3)
+map_df = pd.DataFrame(map_points)
 
-# Left Column – slider inside bordered container
-with left_column:
-    with st.container(border=True):
-        x = st.slider(
-            "Number of Points",
-            min_value=10,
-            max_value=200,
-            value=50,
-            step=10,
-            help="Choose how many random values to generate for the histogram."
-        )
-        st.write(f"Generate {x} random values from a normal distribution.")
-
-# Right Column – histogram visualization using Altair
-with right_column:
-    import altair as alt
-    slide_data = pd.DataFrame({"values": np.random.normal(loc=10, scale=1.5, size=x)})
-    chart = (
-        alt.Chart(slide_data)
-        .mark_bar(color="#FF0082")
-        .encode(
-            alt.X("values:Q", bin=True, title="Value"),
-            alt.Y("count()", title="Frequency"),
-        )
-        .properties(title="Histogram Generated from Slider")
-    )
-    st.altair_chart(chart, use_container_width=True)
-
-# Middle Column – instructions or summary
-with middle_column:
-    st.info(
-        "This section demonstrates Streamlit’s ability to combine widgets, containers, and columns. "
-        "Adjust the slider on the left to dynamically update the histogram on the right."
-    )
+# Display interactive map
+st.map(map_df, color=(255, 0, 130), size=10)
 
 st.caption(
-    "Widgets like sliders and containers make dashboards interactive and intuitive, "
-    "helping users control data and visualizations in real time."
+    f"This map shows retail store locations across {num_cities} Massachusetts cities. "
+    "Use the slider above to choose how many cities to include. "
+    "Each city contains 10 simulated store locations with slight geographic variation."
 )
+
+# Display which cities are currently selected
+st.markdown("#### Cities Displayed:")
+st.write(", ".join([c[0] for c in selected_cities]))

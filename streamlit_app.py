@@ -99,53 +99,43 @@ st.caption("Compares which cities are most efficient at turning sales into profi
 
 
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (Interactive City Slider)
+# SECTION 3 – MAPPING DEMO (Interactive Store Type Dropdown)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-st.markdown("#### Interactive Map of Stores by City")
+st.markdown("#### Explore Retail Store Types Across Massachusetts")
 
-# Predefined Massachusetts cities with coordinates
-city_coords = {
-    "Boston": (42.3601, -71.0589),
-    "Cambridge": (42.3736, -71.1097),
-    "Worcester": (42.2626, -71.8023),
-    "Springfield": (42.1015, -72.5898),
-    "Lowell": (42.6334, -71.3162),
-    "Brockton": (42.0834, -71.0184),
-    "Quincy": (42.2529, -71.0023),
-    "New Bedford": (41.6362, -70.9342),
-    "Fall River": (41.7015, -71.1550),
-    "Lynn": (42.4668, -70.9495),
-}
+# Define retail categories
+store_types = ["Grocery", "Clothing", "Electronics", "Pharmacy", "Sports"]
 
-# Create a bordered container for the widget controls
-with st.container(border=True):
-    st.markdown("#### Use the slider below to select how many cities to display:")
-    num_cities = st.slider("Number of cities to plot", 1, len(city_coords), 5)
+# Fixed number of stores
+num_stores = 100
 
-# Select the top N cities based on slider value
-selected_cities = list(city_coords.items())[:num_cities]
+# Randomly assign store types and coordinates around Massachusetts (centered near Boston)
+map_data = pd.DataFrame({
+    "lat": np.random.randn(num_stores) / 50 + 42.36,
+    "lon": np.random.randn(num_stores) / 50 - 71.06,
+    "Store Type": np.random.choice(store_types, num_stores)
+})
 
-# Generate random store locations around selected cities
-map_points = []
-for city, (lat, lon) in selected_cities:
-    for _ in range(10):  # 10 stores per city
-        lat_jitter = np.random.uniform(-0.01, 0.01)
-        lon_jitter = np.random.uniform(-0.01, 0.01)
-        map_points.append({"City": city, "lat": lat + lat_jitter, "lon": lon + lon_jitter})
+# Sidebar or main dropdown for selecting store type
+selected_type = st.selectbox("Select a Retail Store Type", store_types)
 
-map_df = pd.DataFrame(map_points)
+# Filter map data based on selection
+filtered_data = map_data[map_data["Store Type"] == selected_type]
 
-# Display interactive map
-st.map(map_df, color=(255, 0, 130), size=10)
+# Display metrics and map
+col1, col2 = st.columns([1, 2])
+
+with col1:
+    st.metric("Total Stores in Massachusetts", num_stores)
+    st.metric(f"{selected_type} Stores", filtered_data.shape[0])
+    st.write("Each dot represents a store of the selected type.")
+
+with col2:
+    st.map(filtered_data, color=(255, 0, 130), size=10)
 
 st.caption(
-    f"This map shows retail store locations across {num_cities} Massachusetts cities. "
-    "Use the slider above to choose how many cities to include. "
-    "Each city contains 10 simulated store locations with slight geographic variation."
+    f"Showing {filtered_data.shape[0]} {selected_type.lower()} store locations out of {num_stores} total stores across Massachusetts. "
+    "This demonstrates how Streamlit widgets like dropdowns can filter and dynamically update geospatial data visualizations."
 )
-
-# Display which cities are currently selected
-st.markdown("#### Cities Displayed:")
-st.write(", ".join([c[0] for c in selected_cities]))

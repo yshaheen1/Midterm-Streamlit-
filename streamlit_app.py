@@ -146,11 +146,6 @@ with col1:
 with col2:
     st.map(filtered_data, color=(255, 0, 130), size=10)
 
-st.caption(
-    "Each dot represents a retail store location across Boston. "
-    "All stores share the same magenta color for simplicity, while revenue and sales are shown in the metrics above."
-)
-
 
 st.caption(
     "The map updates dynamically based on the selected store type."

@@ -15,11 +15,11 @@ import numpy as np
 import altair as alt
 
 
-# -----------------------------------------------------------
+
 # HEADER / INFO SECTION (VISIBLE IN APP)
-# -----------------------------------------------------------
+
 st.markdown("""
-### 📊 Massachusetts Retail Dashboard
+### Boston Retail Dashboard
 **Name:** Yusuf Shaheen  
 **Library:** Streamlit  
 **App URL:** [https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/](https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/)  

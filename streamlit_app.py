@@ -8,20 +8,13 @@ This demo shows fictional retail store performance across Massachusetts
 over six months, combining data, charts, and mapping.
 """
 
+# -----------------------------------------------------------
+# IMPORTS
+# -----------------------------------------------------------
 import streamlit as st
 import pandas as pd
 import numpy as np
-
-
-# PAGE CONFIG
-
-st.set_page_config(page_title="Massachusetts Retail Dashboard", layout="wide")
-
-st.title("Massachusetts Retail Dashboard")
-st.write(
-    "This Streamlit demo shows fictional retail performance data across multiple "
-    "cities in Massachusetts. It connects tables, charts, and maps to provide a complete analysis."
-)
+import altair as alt
 
 # -----------------------------------------------------------
 # DATASET CREATION (shared across all demos)
@@ -34,104 +27,115 @@ num_stores = 100
 map_data = pd.DataFrame({
     "lat": np.random.randn(num_stores) / 50 + 42.36,
     "lon": np.random.randn(num_stores) / 50 - 71.06,
-    "Store Type": np.random.choice(store_types, num_stores)
+    "Store Type": np.random.choice(store_types, num_stores),
+    "Sales ($)": np.random.randint(20000, 200000, num_stores)
 })
 
+# Generate revenue as a fraction of sales with variability
+map_data["Revenue ($)"] = (map_data["Sales ($)"] * np.random.uniform(0.5, 0.9, num_stores)).astype(int)
 
 # -----------------------------------------------------------
-# SECTION 1 – DATAFRAME DEMO (Store Overview)
+# DEMO 1 – DATAFRAME OVERVIEW
 # -----------------------------------------------------------
 st.header("1. Retail Store Data Overview")
+st.markdown("#### Explore the Massachusetts Retail Dataset")
 
-st.markdown("#### Explore the Retail Store Dataset")
-
-# Reuse map_data generated in Demo 3
 st.dataframe(map_data, use_container_width=True)
 
-# Calculate summary stats
+# KPIs
 total_stores = map_data.shape[0]
-store_type_counts = map_data["Store Type"].value_counts()
-top_type = store_type_counts.idxmax()
-top_count = store_type_counts.max()
+total_sales = map_data["Sales ($)"].sum()
+total_revenue = map_data["Revenue ($)"].sum()
+avg_margin = (total_revenue / total_sales) * 100
 
-# KPI metrics
 col1, col2, col3 = st.columns(3)
 col1.metric("Total Stores", total_stores)
-col2.metric("Most Common Type", top_type)
-col3.metric("Count of Top Type", top_count)
+col2.metric("Total Sales", f"${total_sales:,.0f}")
+col3.metric("Revenue Margin (%)", f"{avg_margin:.1f}%")
 
 st.caption(
-    "This dataset contains 100 simulated retail stores across Massachusetts. "
-    "Each store is randomly assigned a category and geographic coordinates. "
-    "KPIs summarize total store count and category distribution."
+    "The dataset contains 100 simulated Massachusetts retail stores, "
+    "each with randomly assigned categories, sales, and revenue values."
 )
 
-
 # -----------------------------------------------------------
-# SECTION 2 – VISUALIZATION DEMO (Store Analytics)
+# DEMO 2 – VISUALIZATION ANALYTICS
 # -----------------------------------------------------------
-st.header("2. Retail Store Distribution and Analysis")
+st.header("2. Sales and Revenue Analytics")
+st.markdown("#### Store Performance by Type")
 
-st.markdown("#### Store Count by Retail Type")
+# Bar chart – Total sales and revenue by category
+agg = map_data.groupby("Store Type")[["Sales ($)", "Revenue ($)"]].sum().reset_index()
 
-# Bar chart: number of stores per category
-type_counts = map_data["Store Type"].value_counts().reset_index()
-type_counts.columns = ["Store Type", "Count"]
+chart = (
+    alt.Chart(agg)
+    .transform_fold(["Sales ($)", "Revenue ($)"], as_=["Metric", "Value"])
+    .mark_bar()
+    .encode(
+        x=alt.X("Store Type:N", title="Retail Category"),
+        y=alt.Y("Value:Q", title="Amount ($)"),
+        color="Metric:N",
+        tooltip=["Store Type", "Metric", "Value"]
+    )
+    .properties(title="Total Sales and Revenue by Store Type")
+)
+st.altair_chart(chart, use_container_width=True)
 
-st.bar_chart(type_counts.set_index("Store Type"))
-
-st.markdown("#### Store Distribution by Region (Latitude)")
-
-# Line chart: average latitude per store type (simulating north-south spread)
-lat_summary = map_data.groupby("Store Type")["lat"].mean().reset_index()
-lat_summary = lat_summary.sort_values("lat", ascending=False)
-st.line_chart(lat_summary.set_index("Store Type"))
+# Line chart – Average revenue per store type
+avg_rev = map_data.groupby("Store Type")["Revenue ($)"].mean().reset_index()
+line_chart = (
+    alt.Chart(avg_rev)
+    .mark_line(point=True)
+    .encode(
+        x=alt.X("Store Type:N", title="Store Type"),
+        y=alt.Y("Revenue ($):Q", title="Average Revenue ($)"),
+        color=alt.value("#FF0082")
+    )
+    .properties(title="Average Revenue per Store Type")
+)
+st.altair_chart(line_chart, use_container_width=True)
 
 st.caption(
-    "The bar chart shows how stores are distributed by category, "
-    "while the line chart highlights how store types are geographically positioned across Massachusetts."
+    "The bar chart compares total sales and revenue by store category, "
+    "while the line chart highlights which store types generate the most average revenue."
 )
 
-
-
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (Interactive Store Type Dropdown)
+# DEMO 3 – MAPPING DEMO (Revenue-based Coloring)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
-st.markdown("#### Explore Retail Store Types Across Massachusetts")
+st.markdown("#### Map Colored by Revenue Levels")
 
-# Define retail categories
-store_types = ["Grocery", "Clothing", "Electronics", "Pharmacy", "Sports"]
+# Dropdown to filter store type
+selected_type = st.selectbox("Select a Retail Store Type", ["All"] + store_types)
 
-# Fixed number of stores
-num_stores = 100
+if selected_type != "All":
+    filtered_data = map_data[map_data["Store Type"] == selected_type]
+else:
+    filtered_data = map_data
 
-# Randomly assign store types and coordinates around Massachusetts (centered near Boston)
-map_data = pd.DataFrame({
-    "lat": np.random.randn(num_stores) / 50 + 42.36,
-    "lon": np.random.randn(num_stores) / 50 - 71.06,
-    "Store Type": np.random.choice(store_types, num_stores)
-})
+# Normalize revenue for color intensity (darker = higher revenue)
+min_rev, max_rev = map_data["Revenue ($)"].min(), map_data["Revenue ($)"].max()
+filtered_data["Color Intensity"] = (
+    ((filtered_data["Revenue ($)"] - min_rev) / (max_rev - min_rev)) * 255
+).astype(int)
 
-# Sidebar or main dropdown for selecting store type
-selected_type = st.selectbox("Select a Retail Store Type", store_types)
+# Assign RGB colors (magenta tone that darkens with revenue)
+filtered_data["color"] = filtered_data["Color Intensity"].apply(
+    lambda x: (255, 0, 255 - x // 2)
+)
 
-# Filter map data based on selection
-filtered_data = map_data[map_data["Store Type"] == selected_type]
-
-# Display metrics and map
+# Display KPIs and map
 col1, col2 = st.columns([1, 2])
-
 with col1:
-    st.metric("Total Stores in Massachusetts", num_stores)
-    st.metric(f"{selected_type} Stores", filtered_data.shape[0])
-    st.write("Each dot represents a store of the selected type.")
-
+    st.metric("Total Stores", f"{filtered_data.shape[0]}")
+    st.metric("Total Revenue", f"${filtered_data['Revenue ($)'].sum():,.0f}")
+    st.metric("Average Revenue", f"${filtered_data['Revenue ($)'].mean():,.0f}")
 with col2:
-    st.map(filtered_data, color=(255, 0, 130), size=10)
+    st.map(filtered_data, color=filtered_data["color"], size=10)
 
 st.caption(
-    f"Showing {filtered_data.shape[0]} {selected_type.lower()} store locations out of {num_stores} total stores across Massachusetts. "
-    "This demonstrates how Streamlit widgets like dropdowns can filter and dynamically update geospatial data visualizations."
+    "The map visualizes 100 Massachusetts retail stores. "
+    "Each dot represents a store, with darker magenta shades indicating higher revenue."
 )

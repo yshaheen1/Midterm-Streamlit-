@@ -99,7 +99,7 @@ st.caption("Compares which cities are most efficient at turning sales into profi
 
 
 # -----------------------------------------------------------
-# SECTION 3 – MAPPING DEMO (Locked at 100 Stores)
+# SECTION 3 – MAPPING DEMO (100 Stores + Widget Interaction)
 # -----------------------------------------------------------
 st.header("3. Massachusetts Store Locations")
 
@@ -111,35 +111,59 @@ map_data = pd.DataFrame(
     columns=["lat", "lon"]
 )
 
-# Display the map
+# Display the map with fixed color and point size
 st.map(map_data, color=(255, 0, 130), size=10)
 
 st.caption(
     "This map displays 100 simulated store locations distributed around Boston, Massachusetts. "
-    "It demonstrates Streamlit’s ability to visualize geospatial data easily using the built-in `st.map()` function."
+    "It demonstrates Streamlit’s ability to visualize geographic data using the built-in `st.map()` function."
 )
 
 # -----------------------------------------------------------
-# BASIC WIDGETS (to demonstrate interactivity)
+# INTERACTIVE WIDGETS DEMO (Inspired by Streamlit Sample)
 # -----------------------------------------------------------
-st.markdown("### Interactive Widgets")
+st.markdown("### Interactive Widgets and Columns")
+st.markdown("#### Sliders with Containers")
 
-st.markdown("#### Sliders Example")
+# Create a three-column layout
+left_column, middle_column, right_column = st.columns(3)
 
-# Create three columns for visual balance
-left_col, middle_col, right_col = st.columns(3)
+# Left Column – slider inside bordered container
+with left_column:
+    with st.container(border=True):
+        x = st.slider(
+            "Number of Points",
+            min_value=10,
+            max_value=200,
+            value=50,
+            step=10,
+            help="Choose how many random values to generate for the histogram."
+        )
+        st.write(f"Generate {x} random values from a normal distribution.")
 
-with left_col:
-    radius = st.slider("Zoom Radius", 1, 20, 10)
-with middle_col:
-    color_intensity = st.slider("Color Intensity", 50, 255, 130)
-with right_col:
-    city_focus = st.selectbox("City Focus", ["Boston", "Cambridge", "Worcester", "Springfield"])
+# Right Column – histogram visualization using Altair
+with right_column:
+    import altair as alt
+    slide_data = pd.DataFrame({"values": np.random.normal(loc=10, scale=1.5, size=x)})
+    chart = (
+        alt.Chart(slide_data)
+        .mark_bar(color="#FF0082")
+        .encode(
+            alt.X("values:Q", bin=True, title="Value"),
+            alt.Y("count()", title="Frequency"),
+        )
+        .properties(title="Histogram Generated from Slider")
+    )
+    st.altair_chart(chart, use_container_width=True)
 
-# Re-render map with same 100 stores but updated color and zoom context
-st.map(map_data, color=(255, 0, color_intensity), size=10)
+# Middle Column – instructions or summary
+with middle_column:
+    st.info(
+        "This section demonstrates Streamlit’s ability to combine widgets, containers, and columns. "
+        "Adjust the slider on the left to dynamically update the histogram on the right."
+    )
 
 st.caption(
-    f"Zoom radius: {radius}, City focus: {city_focus}. "
-    "Widgets allow users to adjust visualization settings interactively."
+    "Widgets like sliders and containers make dashboards interactive and intuitive, "
+    "helping users control data and visualizations in real time."
 )

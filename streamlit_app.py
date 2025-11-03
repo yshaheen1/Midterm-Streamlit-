@@ -41,6 +41,7 @@ st.header("1. Retail Store Data Overview")
 st.markdown("#### Explore the Massachusetts Retail Dataset")
 
 st.dataframe(map_data, use_container_width=True)
+st.dataframe(map_data.drop(columns=["lat", "lon"]), use_container_width=True) # Hide latitude and longitude when displaying
 
 # KPIs
 total_stores = map_data.shape[0]
@@ -52,6 +53,7 @@ col1, col2, col3 = st.columns(3)
 col1.metric("Total Stores", total_stores)
 col2.metric("Total Sales", f"${total_sales:,.0f}")
 col3.metric("Revenue Margin (%)", f"{avg_margin:.1f}%")
+
 
 st.caption(
     "The dataset contains 100 simulated Massachusetts retail stores, "
@@ -89,6 +91,26 @@ st.altair_chart(chart, use_container_width=True)
 st.caption(
     "The bar chart compares total sales and revenue by store category, "
 )
+
+st.markdown("#### Sales vs Revenue Correlation")
+
+scatter_chart = (
+    alt.Chart(map_data)
+    .mark_circle(size=80, color="#FF0082", opacity=0.6)
+    .encode(
+        x=alt.X("Sales ($):Q", title="Sales ($)"),
+        y=alt.Y("Revenue ($):Q", title="Revenue ($)"),
+        tooltip=["Store Type", "Sales ($)", "Revenue ($)"]
+    )
+    .properties(title="Correlation Between Sales and Revenue per Store")
+)
+st.altair_chart(scatter_chart, use_container_width=True)
+
+st.caption(
+    "Each dot represents a single store. The scatter plot shows how revenue typically grows with sales, "
+    "revealing overall business performance and variability across stores."
+)
+
 
 # -----------------------------------------------------------
 # DEMO 3 – MAPPING DEMO (Single Color Version)

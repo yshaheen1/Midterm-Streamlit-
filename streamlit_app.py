@@ -86,23 +86,8 @@ chart = (
 )
 st.altair_chart(chart, use_container_width=True)
 
-# Line chart – Average revenue per store type
-avg_rev = map_data.groupby("Store Type")["Revenue ($)"].mean().reset_index()
-line_chart = (
-    alt.Chart(avg_rev)
-    .mark_line(point=True)
-    .encode(
-        x=alt.X("Store Type:N", title="Store Type"),
-        y=alt.Y("Revenue ($):Q", title="Average Revenue ($)"),
-        color=alt.value("#FF0082")
-    )
-    .properties(title="Average Revenue per Store Type")
-)
-st.altair_chart(line_chart, use_container_width=True)
-
 st.caption(
     "The bar chart compares total sales and revenue by store category, "
-    "while the line chart highlights which store types generate the most average revenue."
 )
 
 # -----------------------------------------------------------

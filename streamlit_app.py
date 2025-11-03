@@ -7,19 +7,11 @@ Streamlit allows data scientists to create interactive dashboards quickly.
 This demo shows fictional retail store performance across Boston, combining data, charts, and mapping.
 """
 
-# -----------------------------------------------------------
-# IMPORTS
-# -----------------------------------------------------------
-import streamlit as st
-import pandas as pd
-import numpy as np
-import altair as alt
 
-# -----------------------------------------------------------
-# HEADER / INFO SECTION (VISIBLE IN APP)
-# -----------------------------------------------------------
+# HEADER / INFO SECTION 
+
 st.markdown("""
-### 📊 Massachusetts Retail Dashboard
+### Boston Retail Dashboard
 **Name:** Yusuf Shaheen  
 **Library:** Streamlit  
 **App URL:** [https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/](https://appapppy-mhmrrcmgcgm25pw9sx45ez.streamlit.app/)  
